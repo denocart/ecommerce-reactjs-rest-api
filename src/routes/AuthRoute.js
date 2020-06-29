@@ -3,7 +3,7 @@ import { Route, Switch } from "react-router-dom";
 
 import NotFound from "../pages/NotFound";
 
-import { Dashboard } from "../pages/Dashboard";
+import Dashboard  from "../pages/Dashboard";
 import Logout from "../pages/Logout";
 
 
