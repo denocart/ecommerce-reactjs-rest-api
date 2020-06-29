@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import Avatar from '@material-ui/core/Avatar';
 import Button from '@material-ui/core/Button';
 import CssBaseline from '@material-ui/core/CssBaseline';
@@ -12,7 +12,11 @@ import LockOutlinedIcon from '@material-ui/icons/LockOutlined';
 import Typography from '@material-ui/core/Typography';
 import { makeStyles } from '@material-ui/core/styles';
 import Container from '@material-ui/core/Container';
-
+import loginValidations from '../validations/loginValidations';
+import { isEmpty } from '../validations/isEmpty';
+import PropTypes from 'prop-types';
+import { connect } from 'react-redux';
+import {login} from '../redux/actions/authAction'
 function Copyright() {
   return (
     <Typography variant="body2" color="textSecondary" align="center">
@@ -46,8 +50,33 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-export default function Login() {
+ const  Login=(props)=> {
   const classes = useStyles();
+ const {login, errors} = props;
+   const [state, setState] = useState({email:'', password:'',errors:{}})
+
+   useEffect(() => {
+      if(errors){
+        setState({...state, errors:errors})
+      }
+      // eslint-disable-next-line
+   }, [errors])
+
+const onSubmit = async e =>{
+    e.preventDefault();
+    const loginValidate = loginValidations(state);
+    console.log(loginValidate)
+    if(isEmpty(loginValidate)){
+        console.log('true')
+        login(state)
+    }else{
+        setState({...state, errors:loginValidate})
+    }
+}
+
+const onChange = e => {
+    setState({...state, [e.target.name]:e.target.value, errors:{}})
+}
 
   return (
     <Container component="main" maxWidth="xs">
@@ -59,7 +88,7 @@ export default function Login() {
         <Typography component="h1" variant="h5">
           Sign in
         </Typography>
-        <form className={classes.form} noValidate>
+        <form onSubmit={onSubmit} className={classes.form} noValidate>
           <TextField
             variant="outlined"
             margin="normal"
@@ -68,7 +97,10 @@ export default function Login() {
             id="email"
             label="Email Address"
             name="email"
+            error={state.errors.email ? true : false}
+            helperText={state.errors.email ? state.errors.email : false}
             autoComplete="email"
+            onChange={onChange}
             autoFocus
           />
           <TextField
@@ -80,6 +112,9 @@ export default function Login() {
             label="Password"
             type="password"
             id="password"
+            error={state.errors.password ? true : false}
+            helperText={state.errors.password ? state.errors.password : false}
+            onChange={onChange}
             autoComplete="current-password"
           />
           <FormControlLabel
@@ -115,3 +150,20 @@ export default function Login() {
     </Container>
   );
 }
+
+
+
+
+Login.propTypes = {
+    login: PropTypes.func.isRequired,
+    isAuthenticated: PropTypes.bool,
+    errors:PropTypes.object
+  };
+  const mapStateToProps = state => ({
+    isAuthenticated: state.auth.isAuthenticated,
+    errors:state.errors
+  });
+  export default connect(
+    mapStateToProps,
+    { login }
+  )(Login);
