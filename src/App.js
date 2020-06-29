@@ -1,12 +1,24 @@
 import React from 'react';
-import Login from './pages/Login'
 import './App.css';
+// Redux
+import { Provider } from "react-redux";
+import store from "./store";
+import { BrowserRouter as Router } from "react-router-dom";
+import { ThemeProvider } from '@material-ui/core';
+import lightTheme from './themes/lightTheme';
 
-function App() {
+
+
+const  App =()=> {
+
   return (
-    <div className="App">
-    <Login/>
-    </div>
+   <Provider store={store}>
+   <ThemeProvider theme={lightTheme}>
+     <Router>
+
+     </Router>
+   </ThemeProvider>
+   </Provider>
   );
 }
 
